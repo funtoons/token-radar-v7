@@ -54,6 +54,7 @@
   });
   $('method-fine').textContent =
     'Errors are median multiplicative factors, exp(median |predicted log mcap - actual log mcap|). ' +
+    'Pre-token means the snapshot records no token: both gecko_id and symbol are null. A protocol that carries a symbol already records a token and is shown in the Live view, never ranked. ' +
     'Set B ties A on worst-case walk-forward (its capped-age column is constant in both walk-forward train sets, so it predicts as A does) and loses the leave-one-out tie-break, 3.553x vs 3.509x. ' +
     'Set C loses outright: uncapped age is a cohort effect, not a predictor. ' +
     'Farm verdicts: 5% of implied value as the airdrop pool, farmer count from TVL at a $2,000 typical deposit, gas on the cheapest chain for 12 transactions, 4 active hours. ' +
@@ -146,7 +147,7 @@
     } else if (tab === 'live') {
       var q = '';
       body.innerHTML = R.live.map(liveHtml).join('');
-      shown.textContent = R.live.length + ' protocols that already record a token (market cap shown, never modelled)';
+      shown.textContent = R.live.length + ' protocols that already record a token — by CoinGecko id or by symbol (market cap shown where recorded, never modelled)';
       empty.hidden = true;
     } else {
       body.innerHTML = R.tracked.map(trackedHtml).join('');

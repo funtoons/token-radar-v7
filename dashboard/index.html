@@ -10,7 +10,7 @@
 <header class="masthead">
   <div>
     <h1>TOKEN RADAR <span class="v7">v7</span></h1>
-    <p class="tagline">Every pre-token protocol, ranked by what its token would be worth — pure implied value, no launch forecast.</p>
+    <p class="tagline">Every protocol with no token recorded — both <code>gecko_id</code> and <code>symbol</code> null — ranked by what its token would be worth. Pure implied value, no launch forecast.</p>
   </div>
   <div class="counts" id="counts"></div>
 </header>
@@ -65,7 +65,7 @@
 </main>
 
 <footer>
-  <p>Implied value is this radar's own claim from the snapshot's figures — never make.fun's, never DefiLlama's. “Records no token” means the snapshot carries no token for the protocol, not that none exists. Peer token share is the share of same-age protocols that already record a token: information only, it never changes a rank. Farm figures assume a 5% airdrop pool, a $2,000 standard position and 4 active hours; a smaller deposit earns proportionally less.</p>
+  <p>Implied value is this radar's own claim from the snapshot's figures — never make.fun's, never DefiLlama's. “Records no token” means the snapshot records no token for the protocol: both <code>gecko_id</code> and <code>symbol</code> are null. A protocol that carries a symbol (MORPHO, ENA, SYRUP…) already records a token and sits in the Live view, never on the ranked board. Peer token share is the share of same-age protocols that already record a token: information only, it never changes a rank. Farm figures assume a 5% airdrop pool, a $2,000 standard position and 4 active hours; a smaller deposit earns proportionally less.</p>
   <p class="fine">Data: DefiLlama public API, fetched once by the house. Snapshot date <span id="asof"></span>. Model: least squares of log market cap on log TVL and clipped 7-day change, fit on the 128 live protocols that record a market cap. Built offline; no network.</p>
 </footer>
 

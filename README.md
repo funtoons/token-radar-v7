@@ -20,6 +20,8 @@ log mcap = 6.910 + 0.519 x log(TVL) - 0.135 x clipped 7-day change
 
 The 7-day change is the snapshot's per-cent figure clipped to [-1, 3]. The implied value of a pre-token protocol is exp(predicted log mcap), rounded to whole dollars.
 
+Pre-token means the snapshot records no token: both `gecko_id` and `symbol` are null (RULES.txt). A protocol that carries a symbol already records a token, even with no CoinGecko id and no market cap — so morpho-blue (MORPHO), ethena-usde (ENA), maple (SYRUP) and 255 more sit in the Live view, not on the ranked board. The fit itself is unchanged: it still uses the 128 live protocols that record a market cap above zero.
+
 Feature selection was earned on two blind tests per candidate (error = median multiplicative factor):
 
 | Feature set | Leave-one-out | Walk-forward 2025-01-06 | Walk-forward 2025-06-01 | Worst WF |
@@ -32,7 +34,7 @@ B ties A on worst-case walk-forward (its capped-age column is constant in both w
 
 ## Coverage
 
-All 758 protocols are accounted for: **330 ranked** launch candidates, **158 live** (already record a token, shown with the market's own market cap, never modelled), **270 tracked** pre-token protocols that are not launch candidates (versioned names, wrapped/staked/bridged products, exchanges) with the reason each is excluded. All 40 watchlist slugs are ranked.
+All 758 protocols are accounted for: **198 ranked** launch candidates (pre-token: both `gecko_id` and `symbol` null), **416 live** (already record a token — 158 by CoinGecko id plus 258 that carry a symbol with no CoinGecko id, e.g. morpho-blue/MORPHO, ethena-usde/ENA, maple/SYRUP — shown with the market's own market cap where recorded, never modelled), **144 tracked** pre-token protocols that are not launch candidates (versioned names, wrapped/staked/bridged products, exchanges) with the reason each is excluded. All 40 watchlist slugs are ranked.
 
 ## Farm verdicts
 

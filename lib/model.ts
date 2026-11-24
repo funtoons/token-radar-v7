@@ -7,6 +7,14 @@
 // share of same-age peers that already record a token, labelled as exactly
 // that, never as a launch forecast.
 //
+// "Records no token" means BOTH gecko_id and symbol are null (RULES.txt:
+// the two fields are "both null when it records no token"). A protocol that
+// carries a symbol already records a token — morpho-blue (MORPHO),
+// ethena-usde (ENA), maple (SYRUP) and the like are LIVE, never launch
+// candidates, even though the snapshot gives them no CoinGecko id and no
+// market cap. The ranked board therefore holds only both-null protocols;
+// every symbol-bearing protocol sits in the Live view instead.
+//
 // Feature selection was earned, not assumed. Three candidate feature sets
 // were scored on two blind tests each (leave-one-out and walk-forward at two
 // cutoffs, listed_at before 2025-01-06 vs after and before 2025-06-01 vs
@@ -373,12 +381,19 @@ export function impliedValue(p: SnapshotProtocol, beta: number[], asOf: string, 
   return { implied: Math.max(1, Math.round(Math.exp(predicted))), predicted };
 }
 
-/** Whether a protocol records no token: no CoinGecko id in the snapshot.
- *  (258 protocols carry a symbol but no CoinGecko id and no market cap; the
- *  design counts them pre-token, as the snapshot records no token for them
- *  that any market prices. A protocol with a CoinGecko id is LIVE.) */
+/** Whether a protocol records a token: the snapshot carries a CoinGecko id
+ *  OR a symbol for it. RULES.txt is explicit: gecko_id and symbol are "both
+ *  null when it records no token", so a symbol on its own already records
+ *  a token — 258 protocols in this snapshot carry a symbol with no
+ *  CoinGecko id and no market cap, and they are NOT pre-token. */
+export function hasToken(p: SnapshotProtocol): boolean {
+  return p.gecko_id !== null || p.symbol !== null;
+}
+
+/** Whether a protocol records no token: BOTH gecko_id and symbol are null.
+ *  Only such a protocol can be a launch candidate. */
 export function isPreToken(p: SnapshotProtocol): boolean {
-  return p.gecko_id === null;
+  return !hasToken(p);
 }
 
 /** DefiLlama's version-marker rule: a name ending in a release is a pool of another protocol. */
@@ -425,14 +440,15 @@ export function oddsBand(p: SnapshotProtocol, asOf: string): string {
   return '3+ years';
 }
 
-/** For each age band, the share of protocols in it that already record a token. */
+/** For each age band, the share of protocols in it that already record a token
+ *  (a CoinGecko id or a symbol — see hasToken). */
 export function peerTokenShares(snapshot: Snapshot): Map<string, number> {
   const bands = new Map<string, { total: number; withToken: number }>();
   for (const p of snapshot.protocols) {
     const band = oddsBand(p, snapshot.as_of);
     const entry = bands.get(band) ?? { total: 0, withToken: 0 };
     entry.total++;
-    if (p.gecko_id !== null) entry.withToken++;
+    if (hasToken(p)) entry.withToken++;
     bands.set(band, entry);
   }
   const shares = new Map<string, number>();
@@ -643,7 +659,10 @@ export function buildBoard(snapshot: Snapshot, selection: Selection): BoardRow[]
   }));
 }
 
-/** The live-token protocols, by market cap, for the dashboard's Live token view. */
+/** The live-token protocols — every protocol that records a token, by
+ *  CoinGecko id or by symbol — by market cap, for the dashboard's Live
+ *  token view. Symbol-only protocols record no market cap, so they sort
+ *  after the ones that do; the market's own value is shown, never modelled. */
 export function liveRows(snapshot: Snapshot): LiveRow[] {
   return snapshot.protocols
     .filter((p) => !isPreToken(p))
